@@ -18,6 +18,10 @@ from anthropic import Anthropic, APIError
 # Replace the two defaults below (or set the matching env vars) before running.
 AGENT_ID = os.environ.get("AGENT_ID", "__AGENT_ID__")
 ENVIRONMENT_ID = os.environ.get("ENVIRONMENT_ID", "__ENVIRONMENT_ID__")
+# Optional: Managed Agents Vault credential id(s) (vlt_...) to attach at session
+# create. These authenticate connected MCP servers (e.g. a device bridge) at egress;
+# the secret never enters the sandbox. Comma-separated; empty = none attached.
+VAULT_IDS = [v.strip() for v in os.environ.get("VAULT_IDS", "").split(",") if v.strip()]
 
 
 def _iter_text_blocks(content):
@@ -50,10 +54,10 @@ def main() -> int:
     try:
         # 1. Create the session. Keeping this inside the try means an auth or
         #    bad-request failure here exits cleanly instead of dumping a traceback.
-        session = client.beta.sessions.create(
-            agent=AGENT_ID,
-            environment_id=ENVIRONMENT_ID,
-        )
+        create_kwargs = {"agent": AGENT_ID, "environment_id": ENVIRONMENT_ID}
+        if VAULT_IDS:
+            create_kwargs["vault_ids"] = VAULT_IDS  # attach vault credential(s) for MCP auth
+        session = client.beta.sessions.create(**create_kwargs)
         print(f"[session created: {session.id}]", file=sys.stderr)
 
         # 2. Open the event stream, then 3. send the user message into it.
