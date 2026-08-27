@@ -1,0 +1,15 @@
+# Secrets / local environment — never commit your real key or IDs
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Editor / OS
+.DS_Store

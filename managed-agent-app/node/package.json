@@ -1,0 +1,19 @@
+{
+  "name": "managed-agent-min",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Minimal client for an Anthropic Managed Agent via the beta Sessions API",
+  "scripts": {
+    "start": "tsx index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.121.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

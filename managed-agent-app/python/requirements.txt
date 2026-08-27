@@ -1,0 +1,4 @@
+# The beta Sessions API (client.beta.sessions.*) requires the 1.x line.
+# Older releases (0.6x and earlier) do NOT expose beta.sessions and will fail
+# at client.beta.sessions.create with an AttributeError.
+anthropic>=1.1.0
