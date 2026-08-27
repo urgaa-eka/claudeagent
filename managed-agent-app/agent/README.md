@@ -58,6 +58,21 @@ python main.py "Open Settings and tell me the current battery level."
 The agent now sees the S24's MCP tools and can call them; each call is routed
 through Anthropic's proxy, which injects the vaulted credential at egress.
 
+## Verify (smoke test)
+
+Once steps 1–3 are done, confirm the link end-to-end with `smoke_test.py`:
+
+```bash
+ANTHROPIC_API_KEY=... AGENT_ID=agent_01... ENVIRONMENT_ID=env_01... \
+VAULT_IDS=vlt_<mcp-id>,vlt_<device-id> python smoke_test.py
+```
+
+It opens a session with the vault(s) attached, asks the agent to list its tools,
+prints any `*mcp*` events, and flags a `session.error` (the tell-tale of a
+vault/URL mismatch). A clean run where the agent names the S24 tools = Plane 2 is
+live. (With a dummy key it exits on a clean `[api error 401]`, proving the wiring
+before you use a real key.)
+
 ## Good to know
 
 - **A bad/mismatched credential does not fail session creation.** The session
