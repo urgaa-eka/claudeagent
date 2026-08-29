@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: managed-agent-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # verify.sh runs pytest, which loads the client (imports the SDK), so the
+      # client deps + pytest must be present for the tests to actually run
+      # (they skip gracefully otherwise). Node deps are installed by verify.sh.
+      - name: Install Python deps (client SDK + pytest)
+        run: pip install -r python/requirements.txt pytest
+
+      - name: Verify (py_compile, bash -n, JSON, pytest, tsc --noEmit)
+        run: ./verify.sh
