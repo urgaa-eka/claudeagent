@@ -99,6 +99,9 @@ vault/URL mismatch). A clean run where the agent names the S24 tools = Plane 2 i
 live. (With a dummy key it exits on a clean `[api error 401]`, proving the wiring
 before you use a real key.)
 
+TypeScript twin: `node/smoke-test.ts` — `cd node && npm run smoke` — same behavior
+against the TS client.
+
 ## Good to know
 
 - **A bad/mismatched credential does not fail session creation.** The session

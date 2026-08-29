@@ -6,6 +6,7 @@
   "description": "Minimal client for an Anthropic Managed Agent via the beta Sessions API",
   "scripts": {
     "start": "tsx index.ts",
+    "smoke": "tsx smoke-test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

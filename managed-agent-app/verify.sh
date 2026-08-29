@@ -51,10 +51,20 @@ if [ "${AUTH_SMOKE:-0}" = "1" ]; then
   if python3 -c "import anthropic" 2>/dev/null; then
     out="$(cd python && ANTHROPIC_API_KEY=sk-ant-dummy AGENT_ID=agent_x ENVIRONMENT_ID=env_x \
            python3 main.py "ping" 2>&1)"
-    echo "$out" | grep -q "api error 401" && ok "reached endpoint, clean 401" \
-      || bad "expected a clean 401 (got: $out)"
+    echo "$out" | grep -q "api error 401" && ok "python reached endpoint, clean 401" \
+      || bad "python: expected a clean 401 (got: $out)"
   else
     echo "  skip: anthropic not installed"
+  fi
+
+  step "auth boundary (node): dummy key -> expect clean 401"
+  if command -v npm >/dev/null 2>&1 && [ -d node/node_modules ]; then
+    out="$(cd node && ANTHROPIC_API_KEY=sk-ant-dummy AGENT_ID=agent_x ENVIRONMENT_ID=env_x \
+           VAULT_IDS=vlt_a npx --yes tsx smoke-test.ts 2>&1)"
+    echo "$out" | grep -q "api error 401" && ok "node reached endpoint, clean 401" \
+      || bad "node: expected a clean 401 (got: $out)"
+  else
+    echo "  skip: node deps not installed (run the tsc step first, or npm i in node/)"
   fi
 fi
 
