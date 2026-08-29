@@ -39,6 +39,32 @@ in headers at this scope).
 **OAuth bridges:** skip `S24_MCP_TOKEN`, add the server, then `claude mcp login
 samsung-s24-ultra`.
 
+## Add any MCP server (`add-mcp.sh`)
+
+`add-s24-mcp.sh` is the S24-specific convenience; `add-mcp.sh` is the general,
+reusable version — register **any** HTTP MCP server, with presets for common ones:
+
+```bash
+./add-mcp.sh github                              # preset URL
+MCP_TOKEN=hf_xxx ./add-mcp.sh hf-endpoints       # preset + bearer token
+SCOPE=user ./add-mcp.sh s24 https://<bridge>/mcp "$S24_TOKEN"   # any server
+./add-mcp.sh --help
+```
+
+| Preset | URL | Typical auth |
+| --- | --- | --- |
+| `github` | `https://api.githubcopilot.com/mcp` | OAuth / PAT |
+| `hf-endpoints` | `https://endpoints.huggingface.co/mcp` | HF token (bearer) or `claude mcp login` |
+| `linear` | `https://mcp.linear.app/mcp` | OAuth |
+| `notion` | `https://mcp.notion.com/mcp` | OAuth |
+| `sentry` | `https://mcp.sentry.dev/mcp` | OAuth |
+
+Anything not in the table just needs an explicit `<url>` (e.g. your S24 bridge).
+Token via 3rd arg or `MCP_TOKEN` env — never committed. `SCOPE` = `local`
+(default) / `user` / `project`. After adding, the script prints `claude mcp get
+<name>`; a `Needs authentication` status means run `claude mcp login <name>` (or
+re-add with a bearer header).
+
 ## Verify
 
 ```bash
