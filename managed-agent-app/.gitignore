@@ -10,6 +10,8 @@ venv/
 # Node
 node_modules/
 npm-debug.log*
+# scaffold ships lockfile-free; verify.sh regenerates it locally
+package-lock.json
 
 # Editor / OS
 .DS_Store
