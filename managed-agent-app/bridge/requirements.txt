@@ -1,0 +1,6 @@
+# S24 MCP bridge dependencies.
+# Pin mcp<2: FastMCP was renamed to MCPServer in mcp 2.x, and this server uses
+# the FastMCP API (mcp.server.fastmcp).
+mcp>=1.6,<2
+uvicorn>=0.30
+starlette>=0.37

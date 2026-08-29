@@ -16,7 +16,7 @@ step() { echo; echo "== $* =="; }
 ok()   { echo "  ok: $*"; }
 bad()  { echo "  FAIL: $*"; fail=1; }
 
-PYS="python/main.py agent/smoke_test.py agent/add_vault_credential.py"
+PYS="python/main.py agent/smoke_test.py agent/add_vault_credential.py bridge/s24_mcp_bridge.py"
 SHS="deploy/deploy.sh deploy/run.sh deploy/termux/termux-setup.sh \
      deploy/claude-code/add-s24-mcp.sh deploy/claude-code/add-mcp.sh verify.sh"
 

@@ -74,7 +74,9 @@ With no argument, each client sends a default "introduce yourself" prompt.
 
 - **Run this client on a Linux host** → `deploy/` (`deploy.sh`, SSH + rsync).
 - **Run this client on a phone (Android/Termux)** → `deploy/termux/`.
-- **Let a device (e.g. Samsung S24) be *controlled* via MCP** — two separate planes:
+- **Build the device's MCP bridge** — the server that exposes the `…/mcp` URL and
+  controls the phone (screenshot, tap, swipe, type, launch apps, …) → `bridge/`.
+- **Let that device be *controlled* via MCP** — two separate planes:
   - by your **hosted Managed Agent** (`agent_01…`, using the `vlt_…` vaults) → `agent/`
   - by **Claude Code itself** (`claude mcp`) → `deploy/claude-code/`
 
