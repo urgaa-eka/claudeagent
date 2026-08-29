@@ -58,6 +58,32 @@ python main.py "Open Settings and tell me the current battery level."
 The agent now sees the S24's MCP tools and can call them; each call is routed
 through Anthropic's proxy, which injects the vaulted credential at egress.
 
+## Wiring preset servers in bulk
+
+To give the agent the same servers as the Claude Code plane (`deploy/claude-code/add-mcp.sh`),
+merge `mcp-servers.presets.json` into the agent — it declares `github`,
+`hf-endpoints`, `linear`, `notion`, and `sentry` (keep only what you want). Then
+create one Vault credential per server, keyed to its URL, with
+`add_vault_credential.py`:
+
+```bash
+# one credential per server (token stays in env, never committed):
+ANTHROPIC_API_KEY=... VAULT_ID=vlt_... \
+MCP_SERVER_URL=https://api.githubcopilot.com/mcp MCP_TOKEN=ghp_... \
+python add_vault_credential.py            # prints the vault id
+
+# repeat for each server URL you enabled (AUTH_TYPE=mcp_oauth for OAuth tokens).
+# omit VAULT_ID to create a fresh vault; reuse one VAULT_ID for many servers.
+```
+
+Then run the client / smoke test with `VAULT_IDS` set to that vault id. Each
+credential's `mcp_server_url` must match the agent's `mcp_servers` url (host/scheme
+case, default port, and trailing slash are normalized; a different path or
+subdomain is not). Same servers, same vault → both planes stay in sync.
+
+> The `vlt_…samsung-s24-ultra*` vaults you already have are the S24 equivalent of
+> what `add_vault_credential.py` produces here.
+
 ## Verify (smoke test)
 
 Once steps 1–3 are done, confirm the link end-to-end with `smoke_test.py`:

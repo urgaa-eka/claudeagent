@@ -1,0 +1,19 @@
+{
+  "_comment": "Ready-to-merge Managed Agent config: connect these MCP servers to your agent (agent_01...). 'mcp_servers' declares each server (type/name/url, NO auth); each 'mcp_toolset' entry exposes that server's tools. Auth for each is a Vault credential keyed to the SAME url (static_bearer or mcp_oauth) -- create it with add_vault_credential.py, then attach the vault via the client's VAULT_IDS at session create. See README.md. Keep only the servers you want; delete the rest. These are the same presets as deploy/claude-code/add-mcp.sh, so the two planes stay in sync.",
+
+  "mcp_servers": [
+    { "type": "url", "name": "github",       "url": "https://api.githubcopilot.com/mcp" },
+    { "type": "url", "name": "hf-endpoints",  "url": "https://endpoints.huggingface.co/mcp" },
+    { "type": "url", "name": "linear",        "url": "https://mcp.linear.app/mcp" },
+    { "type": "url", "name": "notion",        "url": "https://mcp.notion.com/mcp" },
+    { "type": "url", "name": "sentry",        "url": "https://mcp.sentry.dev/mcp" }
+  ],
+
+  "tools": [
+    { "type": "mcp_toolset", "mcp_server_name": "github" },
+    { "type": "mcp_toolset", "mcp_server_name": "hf-endpoints" },
+    { "type": "mcp_toolset", "mcp_server_name": "linear" },
+    { "type": "mcp_toolset", "mcp_server_name": "notion" },
+    { "type": "mcp_toolset", "mcp_server_name": "sentry" }
+  ]
+}
