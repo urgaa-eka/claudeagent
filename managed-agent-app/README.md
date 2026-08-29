@@ -91,6 +91,16 @@ Optional steps (pytest, `tsc`, the auth probe) skip gracefully when their toolin
 or a key isn't present, so it's safe to run anywhere. Unit tests live in `tests/`
 (`pip install pytest` to run them).
 
+Or use the **Makefile** — `make help` lists everything:
+
+```bash
+make install    # python venv (+ pytest) and node modules
+make run        # run the client (RUNTIME=python|node PROMPT="...")
+make verify     # the full check suite above
+make deploy DEPLOY_ARGS="--host 1.2.3.4 --key ~/.ssh/id_ed25519"
+make clean
+```
+
 ## How it works
 
 The client implements the Sessions API flow end to end:
