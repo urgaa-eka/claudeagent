@@ -94,7 +94,8 @@ cred = credentials.Certificate(str(key))
 Search order, first match wins:
 
 1. an explicit path argument
-2. `$EKA_SERVICE_ACCOUNT_KEY`, then `$GOOGLE_APPLICATION_CREDENTIALS`
+2. `$EKA_SERVICE_ACCOUNT_KEY`, `$FIREBASE_SERVICE_ACCOUNT_PATH` (the name the
+   Kailash deployment uses), then `$GOOGLE_APPLICATION_CREDENTIALS`
 3. platform config dirs (`%APPDATA%\eka-runner`, `~/.config/eka-runner`,
    `/sdcard/eka-runner` on Android), `~/eka-runner`, the script's own directory,
    and the CWD

@@ -101,6 +101,28 @@ def test_eka_env_var_wins_over_google_default(tmp_path, empty_cwd):
     assert got == eka
 
 
+def test_firebase_service_account_path_is_honoured(tmp_path, empty_cwd):
+    """The name the Kailash deployment already uses, so one var serves both."""
+    key = _write_key(tmp_path / "kailash.json")
+    got = fc.resolve_service_account_key(
+        env={"FIREBASE_SERVICE_ACCOUNT_PATH": str(key)}, home=tmp_path
+    )
+    assert got == key
+
+
+def test_eka_var_outranks_firebase_var_outranks_google(tmp_path, empty_cwd):
+    eka = _write_key(tmp_path / "eka.json")
+    firebase = _write_key(tmp_path / "firebase.json")
+    google = _write_key(tmp_path / "google.json")
+    env = {
+        "FIREBASE_SERVICE_ACCOUNT_PATH": str(firebase),
+        "GOOGLE_APPLICATION_CREDENTIALS": str(google),
+    }
+    assert fc.resolve_service_account_key(env=env, home=tmp_path) == firebase
+    env["EKA_SERVICE_ACCOUNT_KEY"] = str(eka)
+    assert fc.resolve_service_account_key(env=env, home=tmp_path) == eka
+
+
 def test_falls_back_to_google_application_credentials(tmp_path, empty_cwd):
     google = _write_key(tmp_path / "google.json")
     got = fc.resolve_service_account_key(

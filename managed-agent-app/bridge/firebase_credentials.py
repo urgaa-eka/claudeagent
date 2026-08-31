@@ -13,7 +13,8 @@ there and the same file on Windows.
 
   1. an explicit path passed by the caller (authoritative -- a missing explicit
      path raises rather than falling through to a different key)
-  2. $EKA_SERVICE_ACCOUNT_KEY, then $GOOGLE_APPLICATION_CREDENTIALS
+  2. $EKA_SERVICE_ACCOUNT_KEY, $FIREBASE_SERVICE_ACCOUNT_PATH, then
+     $GOOGLE_APPLICATION_CREDENTIALS
   3. per-platform config dirs, the calling script's own directory, and the CWD
   4. the legacy hardcoded paths, so an existing install keeps working
 
@@ -44,10 +45,16 @@ __all__ = [
     "search_dirs",
 ]
 
-# Checked before any filesystem guess, highest priority first. GOOGLE_APPLICATION_
-# CREDENTIALS is the Google-standard name; the EKA one lets this daemon override
-# it without disturbing other Google tooling on the same machine.
-ENV_VARS = ("EKA_SERVICE_ACCOUNT_KEY", "GOOGLE_APPLICATION_CREDENTIALS")
+# Checked before any filesystem guess, highest priority first.
+# EKA_SERVICE_ACCOUNT_KEY is this daemon's own override. FIREBASE_SERVICE_ACCOUNT_PATH
+# is the name the Kailash deployment already uses, so a machine that runs both
+# needs only one variable set. GOOGLE_APPLICATION_CREDENTIALS is the Google-standard
+# name, last so pointing it at another project's key does not hijack this daemon.
+ENV_VARS = (
+    "EKA_SERVICE_ACCOUNT_KEY",
+    "FIREBASE_SERVICE_ACCOUNT_PATH",
+    "GOOGLE_APPLICATION_CREDENTIALS",
+)
 
 # Accepted exact names, in canonical casing so they read correctly in the
 # candidate list and the not-found error. Comparison is case-folded at the
