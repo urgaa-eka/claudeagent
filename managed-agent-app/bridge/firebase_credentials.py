@@ -11,7 +11,8 @@ there and the same file on Windows.
 
 `resolve_service_account_key()` searches, first match wins:
 
-  1. an explicit path passed by the caller
+  1. an explicit path passed by the caller (authoritative -- a missing explicit
+     path raises rather than falling through to a different key)
   2. $EKA_SERVICE_ACCOUNT_KEY, then $GOOGLE_APPLICATION_CREDENTIALS
   3. per-platform config dirs, the calling script's own directory, and the CWD
   4. the legacy hardcoded paths, so an existing install keeps working
@@ -48,8 +49,10 @@ __all__ = [
 # it without disturbing other Google tooling on the same machine.
 ENV_VARS = ("EKA_SERVICE_ACCOUNT_KEY", "GOOGLE_APPLICATION_CREDENTIALS")
 
-# Accepted exact names, stored case-folded and compared that way.
-KEY_FILENAMES = ("serviceaccountkey.json", "service-account-key.json")
+# Accepted exact names, in canonical casing so they read correctly in the
+# candidate list and the not-found error. Comparison is case-folded at the
+# point of use, so any casing on disk still matches.
+KEY_FILENAMES = ("serviceAccountKey.json", "service-account-key.json")
 
 # The Firebase console downloads keys as <project>-firebase-adminsdk-<id>.json.
 KEY_GLOBS = ("*firebase-adminsdk*.json",)
@@ -148,7 +151,7 @@ def _match_in_dir(directory: Path) -> Path | None:
         # Missing, unreadable, or not a directory -- all just mean "no match".
         return None
 
-    wanted = set(KEY_FILENAMES)
+    wanted = {name.casefold() for name in KEY_FILENAMES}
     for entry in entries:
         if entry.name.casefold() in wanted and entry.is_file():
             return entry
@@ -164,12 +167,27 @@ def resolve_service_account_key(
 ):
     """Return the path to the service-account key, or None when `require` is False.
 
-    Checks `candidate_paths()` in order, then falls back to scanning each search
-    directory for a case-insensitive or console-named match.
+    An `explicit` path is authoritative: if it is given and missing, this raises
+    rather than searching on, so a typo can never silently resolve to a different
+    project's key. Otherwise checks `candidate_paths()` in order, then scans each
+    search directory for a case-insensitive or console-named match.
     """
+    if explicit:
+        # An explicit path is an instruction, not a hint. Falling through to the
+        # search when it is missing would quietly authenticate against whatever
+        # other key happens to be on the machine -- a different Firebase project.
+        chosen = Path(explicit).expanduser()
+        if chosen.is_file():
+            return chosen
+        if not require:
+            return None
+        raise CredentialsNotFound(
+            f"Service-account key not found at the explicitly requested path: {chosen}"
+        )
+
     tried: list[Path] = []
 
-    for path in candidate_paths(explicit, env=env, script_dir=script_dir, home=home):
+    for path in candidate_paths(env=env, script_dir=script_dir, home=home):
         tried.append(path)
         if path.is_file():
             return path

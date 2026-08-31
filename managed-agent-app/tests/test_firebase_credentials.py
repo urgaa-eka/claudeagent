@@ -62,6 +62,32 @@ def test_explicit_path_wins_over_env(tmp_path, empty_cwd):
     assert got == explicit
 
 
+def test_missing_explicit_path_raises_instead_of_using_another_key(tmp_path, empty_cwd):
+    """A typo'd --key must not silently authenticate against a different project."""
+    fallback = _write_key(tmp_path / "eka-runner" / "serviceAccountKey.json")
+    with pytest.raises(fc.CredentialsNotFound, match="explicitly requested path"):
+        fc.resolve_service_account_key(
+            explicit=tmp_path / "typo.json", env={}, home=tmp_path
+        )
+    # The fallback key exists and would have been found by a plain search.
+    assert fc.resolve_service_account_key(env={}, home=tmp_path) == fallback
+
+
+def test_missing_explicit_path_with_require_false_returns_none(tmp_path, empty_cwd):
+    _write_key(tmp_path / "eka-runner" / "serviceAccountKey.json")
+    got = fc.resolve_service_account_key(
+        explicit=tmp_path / "typo.json", env={}, home=tmp_path, require=False
+    )
+    assert got is None
+
+
+def test_candidate_list_uses_canonical_filename_casing(tmp_path):
+    """The not-found error prints this list; lowercased names read as a demand."""
+    paths = fc.candidate_paths(env={}, home=tmp_path)
+    assert any(p.name == "serviceAccountKey.json" for p in paths)
+    assert not any(p.name == "serviceaccountkey.json" for p in paths)
+
+
 def test_eka_env_var_wins_over_google_default(tmp_path, empty_cwd):
     eka = _write_key(tmp_path / "eka.json")
     google = _write_key(tmp_path / "google.json")
