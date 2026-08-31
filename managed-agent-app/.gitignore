@@ -1,5 +1,6 @@
 # Secrets / local environment — never commit your real key or IDs
 .env
+# Firebase service-account keys are ignored repo-wide by the root .gitignore.
 
 # Python
 __pycache__/
