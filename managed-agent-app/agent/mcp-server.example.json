@@ -1,0 +1,15 @@
+{
+  "_comment": "Merge these two arrays into your Managed Agent's definition so it can drive the S24. 'mcp_servers' declares the bridge (NO auth here); the matching 'mcp_toolset' entry exposes its tools. Auth comes from a Vault attached at session create (VAULT_IDS) - see README.md. Replace the url with your real S24 MCP bridge endpoint (Streamable HTTP).",
+
+  "mcp_servers": [
+    {
+      "type": "url",
+      "name": "samsung-s24-ultra",
+      "url": "https://<your-s24-mcp-bridge-host>/mcp"
+    }
+  ],
+
+  "tools": [
+    { "type": "mcp_toolset", "mcp_server_name": "samsung-s24-ultra" }
+  ]
+}

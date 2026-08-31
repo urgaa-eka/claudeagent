@@ -1,0 +1,26 @@
+# Optional: run the Managed Agent client as a systemd one-shot service.
+#
+# Install on the device (adjust User / paths if you changed --remote-dir):
+#   sudo cp /opt/managed-agent/deploy/managed-agent.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl start managed-agent      # runs once now
+#   journalctl -u managed-agent -f          # watch its output
+#
+# For scheduled runs, pair it with a managed-agent.timer.
+# The client is a one-shot: it sends one prompt and exits (Type=oneshot fits).
+
+[Unit]
+Description=Anthropic Managed Agent client (one-shot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/opt/managed-agent
+EnvironmentFile=/opt/managed-agent/.env
+Environment=RUNTIME=python
+ExecStart=/opt/managed-agent/deploy/run.sh "Hello from systemd"
+
+[Install]
+WantedBy=multi-user.target

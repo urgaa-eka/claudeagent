@@ -1,0 +1,18 @@
+# Credentials — repo-wide, so a key dropped in any subdirectory is covered.
+# Firebase Admin SDK service-account keys grant full project access; they belong
+# in $EKA_SERVICE_ACCOUNT_KEY or ~/eka-runner/, never in git. Git matches these
+# case-sensitively, hence the spelling variants.
+serviceAccountKey.json
+serviceAccountkey.json
+serviceaccountkey.json
+ServiceAccountKey.json
+service-account-key.json
+*firebase-adminsdk*.json
+# What s24_phone_direct_cloud.py actually loads -- matches none of the
+# patterns above, so it needs naming outright.
+s24-phone-daemon-key.json
+*-daemon-key.json
+
+# Generic secret drops
+*.pem
+*.p12

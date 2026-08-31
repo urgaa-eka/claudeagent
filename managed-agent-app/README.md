@@ -70,6 +70,39 @@ With no argument, each client sends a default "introduce yourself" prompt.
 > pip install -r requirements.txt
 > ```
 
+## Deploy & connect a device
+
+- **Run this client on a Linux host** → `deploy/` (`deploy.sh`, SSH + rsync).
+- **Run this client on a phone (Android/Termux)** → `deploy/termux/`.
+- **Build the device's MCP bridge** — the server that exposes the `…/mcp` URL and
+  controls the phone (screenshot, tap, swipe, type, launch apps, …) → `bridge/`.
+- **Let that device be *controlled* via MCP** — two separate planes:
+  - by your **hosted Managed Agent** (`agent_01…`, using the `vlt_…` vaults) → `agent/`
+  - by **Claude Code itself** (`claude mcp`) → `deploy/claude-code/`
+
+## Verify the kit
+
+One command runs every check:
+
+```bash
+./verify.sh                 # py_compile, bash -n, JSON validity, pytest, tsc --noEmit
+AUTH_SMOKE=1 ./verify.sh    # also hits the live endpoint with a dummy key (expects a clean 401)
+```
+
+Optional steps (pytest, `tsc`, the auth probe) skip gracefully when their tooling
+or a key isn't present, so it's safe to run anywhere. Unit tests live in `tests/`
+(`pip install pytest` to run them).
+
+Or use the **Makefile** — `make help` lists everything:
+
+```bash
+make install    # python venv (+ pytest) and node modules
+make run        # run the client (RUNTIME=python|node PROMPT="...")
+make verify     # the full check suite above
+make deploy DEPLOY_ARGS="--host 1.2.3.4 --key ~/.ssh/id_ed25519"
+make clean
+```
+
 ## How it works
 
 The client implements the Sessions API flow end to end:

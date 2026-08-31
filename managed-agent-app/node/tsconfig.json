@@ -10,5 +10,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["index.ts"]
+  "include": ["index.ts", "smoke-test.ts"]
 }

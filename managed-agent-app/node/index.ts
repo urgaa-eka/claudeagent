@@ -15,6 +15,13 @@ import Anthropic from "@anthropic-ai/sdk";
 // Replace the two defaults below (or set the matching env vars) before running.
 const AGENT_ID = process.env.AGENT_ID ?? "__AGENT_ID__";
 const ENVIRONMENT_ID = process.env.ENVIRONMENT_ID ?? "__ENVIRONMENT_ID__";
+// Optional: Managed Agents Vault credential id(s) (vlt_...) to attach at session
+// create. These authenticate connected MCP servers (e.g. a device bridge) at egress;
+// the secret never enters the sandbox. Comma-separated; empty = none attached.
+const VAULT_IDS = (process.env.VAULT_IDS ?? "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 
 /** Extract text from an event's `content`, tolerating a few shapes. */
 function* iterText(content: unknown): Generator<string> {
@@ -49,6 +56,7 @@ async function main(): Promise<number> {
     const session = await client.beta.sessions.create({
       agent: AGENT_ID,
       environment_id: ENVIRONMENT_ID,
+      ...(VAULT_IDS.length ? { vault_ids: VAULT_IDS } : {}),
     });
     console.error(`[session created: ${session.id}]`);
 

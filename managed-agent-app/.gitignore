@@ -1,5 +1,6 @@
 # Secrets / local environment — never commit your real key or IDs
 .env
+# Firebase service-account keys are ignored repo-wide by the root .gitignore.
 
 # Python
 __pycache__/
@@ -10,6 +11,8 @@ venv/
 # Node
 node_modules/
 npm-debug.log*
+# scaffold ships lockfile-free; verify.sh regenerates it locally
+package-lock.json
 
 # Editor / OS
 .DS_Store
