@@ -59,7 +59,13 @@ ENV_VARS = (
 # Accepted exact names, in canonical casing so they read correctly in the
 # candidate list and the not-found error. Comparison is case-folded at the
 # point of use, so any casing on disk still matches.
-KEY_FILENAMES = ("serviceAccountKey.json", "service-account-key.json")
+KEY_FILENAMES = (
+    # What s24_phone_direct_cloud.py actually ships with -- first, so the
+    # daemon's own key wins over a generic one left in the same directory.
+    "s24-phone-daemon-key.json",
+    "serviceAccountKey.json",
+    "service-account-key.json",
+)
 
 # The Firebase console downloads keys as <project>-firebase-adminsdk-<id>.json.
 KEY_GLOBS = ("*firebase-adminsdk*.json",)

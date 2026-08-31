@@ -101,9 +101,11 @@ Search order, first match wins:
    and the CWD
 4. the previously hardcoded Windows paths, so an existing install keeps working
 
-Within a directory, names match case-insensitively and the console's own
-download name (`<project>-firebase-adminsdk-<id>.json`) is accepted, so a key
-saved straight from Firebase works unrenamed.
+Within a directory the accepted names are `s24-phone-daemon-key.json` (what the
+daemon actually ships with), `serviceAccountKey.json` and
+`service-account-key.json`, matched case-insensitively, plus the console's own
+download name (`<project>-firebase-adminsdk-<id>.json`) so a key saved straight
+from Firebase works unrenamed.
 
 **Set the env var and skip the guessing:**
 

@@ -136,6 +136,19 @@ def test_home_eka_runner_directory_is_searched(tmp_path, empty_cwd):
     assert fc.resolve_service_account_key(env={}, home=tmp_path) == key
 
 
+def test_daemon_own_key_filename_is_found(tmp_path, empty_cwd):
+    """s24_phone_direct_cloud.py ships with this name, not serviceAccountKey.json."""
+    key = _write_key(tmp_path / "eka-runner" / "s24-phone-daemon-key.json")
+    assert fc.resolve_service_account_key(env={}, home=tmp_path) == key
+
+
+def test_daemon_key_wins_over_generic_key_in_same_dir(tmp_path, empty_cwd):
+    d = tmp_path / "eka-runner"
+    _write_key(d / "serviceAccountKey.json", project_id="generic")
+    daemon = _write_key(d / "s24-phone-daemon-key.json", project_id="s24")
+    assert fc.resolve_service_account_key(env={}, home=tmp_path) == daemon
+
+
 def test_lowercase_k_spelling_is_found(tmp_path, empty_cwd):
     """The bug the original list shipped: serviceAccountkey.json on a
     case-sensitive filesystem (Android) never matched serviceAccountKey.json."""
