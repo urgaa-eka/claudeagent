@@ -72,3 +72,60 @@ This bridge grants full device control to whoever holds the token and can reach
 the URL. Always set `S24_BRIDGE_TOKEN`, prefer a tunnel with TLS, and rotate the
 token / drop the tunnel when you're done. `trycloudflare.com` URLs are public but
 unguessable; the bearer token is the real gate.
+
+## Firebase credentials (`firebase_credentials.py`)
+
+The separate Firestore **direct-cloud runtime** (`s24_phone_direct_cloud.py`,
+which polls the `commandQueue` map and `currentDirectCloudRuntime`) needs a
+Firebase Admin SDK service-account key. That daemon runs on a Windows laptop, a
+Linux host, or Termux on the phone, so a fixed list of absolute Windows paths
+only ever works on one of them — and a single spelling of the filename silently
+fails on Android, whose filesystem is case-sensitive.
+
+`firebase_credentials.resolve_service_account_key()` does the lookup properly:
+
+```python
+from firebase_credentials import resolve_service_account_key, describe_key
+
+key = resolve_service_account_key(script_dir=os.path.dirname(__file__))
+cred = credentials.Certificate(str(key))
+```
+
+Search order, first match wins:
+
+1. an explicit path argument
+2. `$EKA_SERVICE_ACCOUNT_KEY`, then `$GOOGLE_APPLICATION_CREDENTIALS`
+3. platform config dirs (`%APPDATA%\eka-runner`, `~/.config/eka-runner`,
+   `/sdcard/eka-runner` on Android), `~/eka-runner`, the script's own directory,
+   and the CWD
+4. the previously hardcoded Windows paths, so an existing install keeps working
+
+Within a directory, names match case-insensitively and the console's own
+download name (`<project>-firebase-adminsdk-<id>.json`) is accepted, so a key
+saved straight from Firebase works unrenamed.
+
+**Set the env var and skip the guessing:**
+
+```bash
+export EKA_SERVICE_ACCOUNT_KEY="$HOME/eka-runner/serviceAccountKey.json"   # POSIX
+$env:EKA_SERVICE_ACCOUNT_KEY = "$env:USERPROFILE\eka-runner\serviceAccountKey.json"  # PowerShell
+```
+
+**Locate and check a key without printing it:**
+
+```bash
+python firebase_credentials.py
+# found: /home/you/eka-runner/serviceAccountKey.json
+#   type: service_account
+#   project_id: …
+#   client_email: …
+```
+
+`describe_key()` returns only `type`, `project_id`, `client_email`, `client_id`
+and a `private_key_present` flag — never the private key or its id — so it is
+safe to log or paste when debugging which project a key belongs to.
+
+No key on the machine? Don't hunt for one: Firebase Console → Project Settings →
+Service accounts → **Generate new private key**, save it to `~/eka-runner/`, and
+`chmod 600` it. Keys are ignored repo-wide by the root `.gitignore`; never commit
+one.
